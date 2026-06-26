@@ -1,6 +1,95 @@
 const fs = require('fs');
 const path = require('path');
 
+const progressionPatch = `
+function shuffleList(list){
+  const a = list.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function masteredCount(){
+  return Object.values(S.completed || {}).filter(score => Number(score) >= 70).length;
+}
+
+function masteryLevel(){
+  const mastered = masteredCount();
+  const st = stats();
+  if(mastered >= 7 && st.acc >= 80) return {n:6,name:'Practice Mode',end:3000};
+  if(mastered >= 5) return {n:5,name:'Decision Maker',end:2100};
+  if(mastered >= 3) return {n:4,name:'Range Builder',end:1400};
+  if(mastered >= 2) return {n:3,name:'Core Student',end:900};
+  if(mastered >= 1) return {n:2,name:'Table Aware',end:500};
+  return {n:1,name:'New Player',end:200};
+}
+
+function mixedQuestionPool(){
+  let pool = [];
+  topics.forEach(t => {
+    if((S.completed[t.key] || 0) >= 60 || ['basics','handread','preflop','potodds'].includes(t.key)){
+      const items = (quizzes[t.key] || []).concat(typeof extraQuestions === 'function' ? extraQuestions(t.key) : []);
+      items.forEach(item => pool.push({...item, sourceTopic:t.key}));
+    }
+  });
+  return shuffleList(pool).slice(0, 8);
+}
+
+function startMixedDrill(){
+  currentTopic = 'mixed';
+  quiz = mixedQuestionPool();
+  quizIndex = 0;
+  quizRight = 0;
+  quizAnswers = [];
+  selectedOption = null;
+  S.lastQuiz = 'mixed';
+  save();
+  switchScreen('quiz');
+  renderQuestion();
+}
+
+function recommendedTopic(){
+  if(!S.experience) return topicByKey('basics');
+  const due = firstMistakeTopic();
+  if(due) return topicByKey(due);
+  const weak = weakestTopic();
+  if(weak && weak.acc < 75) return topicByKey(weak.key);
+  const firstUnfinished = topics.find(t => !S.completed[t.key]);
+  return firstUnfinished || {key:'mixed', name:'Mixed Drill'};
+}
+
+function renderDaily(st){
+  const card = document.getElementById('dailyCard');
+  const next = recommendedTopic();
+  const startAction = next.key === 'mixed' ? 'startMixedDrill()' : 'openTopic(\\'' + next.key + '\\')';
+  card.innerHTML = '<div class="kicker">Today\'s 7-minute session</div>' +
+    '<h2>' + (st.due ? 'Review weak spots first' : 'Smart review is ready') + '</h2>' +
+    '<p>' + (st.due ? 'Clear saved mistakes, then do one mixed drill.' : 'No saved mistakes, so Review now trains your weakest or next topic instead.') + '</p>' +
+    '<div class="steps"><div class="step"><div class="n">1</div><div><b>Review</b><small>' + (st.due ? st.due + ' due' : 'Smart fallback') + '</small></div></div><div class="step"><div class="n">2</div><div><b>Learn</b><small>' + next.name + '</small></div></div><div class="step"><div class="n">3</div><div><b>Mixed drill</b><small>8 random decisions across topics</small></div></div></div>' +
+    '<div class="actions"><button class="btn good" onclick="startReview()">Review</button><button class="btn" onclick="' + startAction + '">Start</button><button class="btn secondary" onclick="startMixedDrill()">Mixed</button></div>' +
+    '<div class="gloss-row">' + ['UTG','BTN','3-bet','equity','range'].map(termButton).join('') + '</div>';
+}
+
+function renderHome(){
+  const st = stats();
+  const lvl = masteryLevel();
+  const mastered = masteredCount();
+  document.getElementById('streakVal').textContent = S.streak || 0;
+  document.getElementById('levelPill').textContent = 'Level ' + lvl.n;
+  document.getElementById('levelName').textContent = lvl.name;
+  document.getElementById('levelCopy').textContent = experienceCopy() + ' Level is now based on mastered topics, not just XP.';
+  document.getElementById('xpText').textContent = S.xp + ' XP · ' + mastered + ' topics mastered';
+  document.getElementById('xpFill').style.width = Math.min(100, Math.round((S.xp / lvl.end) * 100)) + '%';
+  document.getElementById('homeAcc').textContent = st.acc == null ? '—' : st.acc + '%';
+  document.getElementById('homeDrills').textContent = st.drills;
+  document.getElementById('homeDue').textContent = st.due;
+  renderDaily(st);
+  renderHomeTopics();
+}
+`;
+
 module.exports = (req, res) => {
   const sourcePath = path.join(process.cwd(), 'source.html');
   const fallbackPath = path.join(process.cwd(), 'index.html');
@@ -83,6 +172,8 @@ function startQuiz(key, reviewOnly=false){
   currentTopic = key;
   const base = (quizzes[key] || []).concat(extraQuestions(key));`
   );
+
+  html = html.replace('function init(){', progressionPatch + '\nfunction init(){');
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
