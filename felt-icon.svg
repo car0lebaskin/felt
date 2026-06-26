@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111116"/>
+      <stop offset="100%" stop-color="#0A0A0F"/>
+    </linearGradient>
+    <!-- Felt green gradient -->
+    <linearGradient id="felt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E6B45"/>
+      <stop offset="100%" stop-color="#145232"/>
+    </linearGradient>
+    <!-- Highlight gradient for felt surface -->
+    <linearGradient id="felt-hi" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <!-- White card gradient -->
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F0F0F0"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="rgba(0,0,0,0.6)"/>
+    </filter>
+    <filter id="card-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="rgba(0,0,0,0.5)"/>
+    </filter>
+  </defs>
+
+  <!-- App background -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+
+  <!-- Felt table surface — oval / rounded rect -->
+  <ellipse cx="256" cy="272" rx="198" ry="148" fill="url(#felt)" filter="url(#shadow)"/>
+  <!-- Felt highlight sheen -->
+  <ellipse cx="256" cy="220" rx="160" ry="80" fill="url(#felt-hi)"/>
+  <!-- Felt inner rail line -->
+  <ellipse cx="256" cy="272" rx="174" ry="126" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2.5"/>
+
+  <!-- Card 1 — back left, slight rotation -->
+  <g transform="translate(162, 158) rotate(-14)" filter="url(#card-shadow)">
+    <rect width="88" height="122" rx="10" fill="url(#card-grad)"/>
+    <!-- Red heart suit -->
+    <text x="44" y="72" font-size="46" text-anchor="middle" fill="#DC2626" font-family="Georgia, serif">♥</text>
+    <text x="12" y="26" font-size="18" text-anchor="middle" fill="#DC2626" font-weight="700" font-family="Arial, sans-serif">A</text>
+  </g>
+
+  <!-- Card 2 — back right, slight rotation other way -->
+  <g transform="translate(258, 150) rotate(12)" filter="url(#card-shadow)">
+    <rect width="88" height="122" rx="10" fill="url(#card-grad)"/>
+    <!-- Black spade suit -->
+    <text x="44" y="72" font-size="46" text-anchor="middle" fill="#1A1A1A" font-family="Georgia, serif">♠</text>
+    <text x="12" y="26" font-size="18" text-anchor="middle" fill="#1A1A1A" font-weight="700" font-family="Arial, sans-serif">K</text>
+  </g>
+
+  <!-- Small chip stack accent — bottom right of felt -->
+  <circle cx="358" cy="318" r="18" fill="#2F6BFF" opacity="0.9"/>
+  <circle cx="358" cy="310" r="18" fill="#3B7AFF"/>
+  <circle cx="358" cy="302" r="18" fill="#4A88FF"/>
+  <!-- Chip edge lines -->
+  <circle cx="358" cy="302" r="18" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-dasharray="6 4"/>
+
+  <!-- Small green accent dot — bottom left of felt -->
+  <circle cx="158" cy="322" r="12" fill="#3FD98B" opacity="0.75"/>
+</svg>
