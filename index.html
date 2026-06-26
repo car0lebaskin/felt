@@ -25,6 +25,9 @@
 html,body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;font-size:15px}
 body{max-width:430px;margin:0 auto}
 /* screens controlled by .active class + screenIn keyframe below */
+.screen{display:none;padding:20px 20px 110px}
+.screen.active{display:block;animation:screenIn 180ms cubic-bezier(0.23,1,0.32,1) both}
+@keyframes screenIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* TABBAR */
 .tabbar{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:430px;
@@ -262,10 +265,6 @@ body{max-width:430px;margin:0 auto}
   background:var(--up);color:#06140C;font-family:var(--display);font-weight:800;font-size:14px;
   padding:13px 22px;border-radius:99px;z-index:300;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* SCREEN FADE — soft transition between screens instead of hard cut */
-.screen{display:none;padding:20px 20px 110px;animation:screenIn 180ms cubic-bezier(0.23,1,0.32,1) both}
-@keyframes screenIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* OPT BTN — add transition so active state feels responsive */
 .opt-btn{width:100%;padding:15px 17px;border:1.5px solid var(--line);border-radius:14px;
