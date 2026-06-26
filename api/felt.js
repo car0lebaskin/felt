@@ -43,6 +43,21 @@ module.exports = (req, res) => {
 }`
   );
 
+  html = html.replace(
+    `function startReview(key){
+  const target = key || firstMistakeTopic();
+  if(!target){ showToast('No review cards yet'); return; }
+  startQuiz(target, true);
+}`,
+    `function startReview(key){
+  const weak = weakestTopic();
+  const target = key || firstMistakeTopic() || (weak && weak.key) || recommendedTopic().key || 'basics';
+  const due = (S.mistakes[target] || []).length;
+  if(!due) showToast('Smart review started');
+  startQuiz(target, due > 0);
+}`
+  );
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).send(html);
