@@ -29,6 +29,13 @@ const statsBlock = `<!-- STATS -->
 
 `;
 
+const headEnhancements = `
+<meta name="description" content="Felt is a mobile poker training app.">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/felt-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/felt-icon.svg">
+`;
+
 const renderStatsScript = `
 function renderStats(){
   const history = S.quizHistory || {};
@@ -100,6 +107,7 @@ module.exports = (req, res) => {
   const htmlPath = fs.existsSync(sourcePath) ? sourcePath : fallbackPath;
   let html = fs.readFileSync(htmlPath, 'utf8');
 
+  if(!html.includes('rel="manifest"')) html = html.replace('</head>', headEnhancements + '</head>');
   html = html.replace(/<!-- STATS -->[\s\S]*?<!-- NAV -->/, statsBlock + '<!-- NAV -->');
   html = html.replace("if(name==='learn') renderLearn();", "if(name==='learn') renderLearn();\n  if(name==='stats') renderStats();");
   html = html.replace("function getLevel(xp){", renderStatsScript + "\nfunction getLevel(xp){");
