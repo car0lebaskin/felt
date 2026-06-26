@@ -34,6 +34,7 @@ const headEnhancements = `
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/felt-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/felt-icon.svg">
+<link rel="stylesheet" href="/felt-coach.css">
 `;
 
 const renderStatsScript = `
@@ -108,6 +109,7 @@ module.exports = (req, res) => {
   let html = fs.readFileSync(htmlPath, 'utf8');
 
   if(!html.includes('rel="manifest"')) html = html.replace('</head>', headEnhancements + '</head>');
+  if(!html.includes('felt-coach.css')) html = html.replace('</head>', '<link rel="stylesheet" href="/felt-coach.css"></head>');
   html = html.replace(/<!-- STATS -->[\s\S]*?<!-- NAV -->/, statsBlock + '<!-- NAV -->');
   html = html.replace("if(name==='learn') renderLearn();", "if(name==='learn') renderLearn();\n  if(name==='stats') renderStats();");
   html = html.replace("function getLevel(xp){", renderStatsScript + "\nfunction getLevel(xp){");
