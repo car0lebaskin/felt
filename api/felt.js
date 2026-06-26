@@ -36,6 +36,168 @@ function startMixedDrill(){
 }
 `;
 
+const moduleTopicsPatch = `
+topics.push(
+  {
+    key:'position', emoji:'🪑', name:'Position Mastery', label:'Core', minutes:'7 min',
+    simple:[
+      ['Position is information','The later you act, the more you know before deciding. This is why the Button is the best seat.'],
+      ['Early seats need stronger hands','UTG acts first before the flop and often first after the flop. Play tighter there.'],
+      ['Out of position is harder','When you act first after the flop, you have to guess more often. Avoid weak hands from blinds.']
+    ],
+    advanced:[
+      ['Positional EV','Hands realise more equity in position because you can control pot size and take more profitable bluffs.'],
+      ['Blind disadvantage','The blinds get a discount but lose positional advantage. Discount does not mean automatic call.'],
+      ['Late-position pressure','CO and BTN can attack blinds wider because the remaining players are fewer and out of position.']
+    ],
+    extra:'positions'
+  },
+  {
+    key:'draws', emoji:'🌊', name:'Playing Draws', label:'Core', minutes:'7 min',
+    simple:[
+      ['A draw is not a made hand','Flush draws and straight draws need help. You need the right price or fold equity to continue.'],
+      ['Count clean outs','Only count cards that likely make you win. Some outs can make a better hand for your opponent.'],
+      ['Strong draws can be aggressive','Combo draws have more equity and can sometimes bet or raise, not just call.']
+    ],
+    advanced:[
+      ['Fold equity plus equity','Semi-bluffs work because you can win now with folds or later when your draw hits.'],
+      ['Reverse implied odds','Weak flush draws can lose big pots when a higher flush is possible.'],
+      ['Equity realisation','Draws perform better in position because you see more information before calling future bets.']
+    ],
+    extra:'odds'
+  },
+  {
+    key:'valueriver', emoji:'🏁', name:'River Decisions', label:'Core', minutes:'8 min',
+    simple:[
+      ['No more cards','On the river, draws have either hit or missed. Your decision is value bet, bluff, call or fold.'],
+      ['Value bet worse hands','A river value bet is good only if worse hands can call.'],
+      ['Do not hero call from curiosity','Calling just to see is expensive. Ask what bluffs villain can realistically have.']
+    ],
+    advanced:[
+      ['Polar ranges','Large river bets usually represent strong value or bluffs, not medium-strength hands.'],
+      ['Blockers matter','Holding cards that block villain value hands can make a bluff or call better.'],
+      ['Population tendencies','Against under-bluffers, fold more bluff-catchers. Against over-bluffers, call more.']
+    ],
+    extra:null
+  },
+  {
+    key:'facingraises', emoji:'🛡️', name:'Facing Raises', label:'Core+', minutes:'8 min',
+    simple:[
+      ['Respect raises','At beginner stakes, raises often mean strength. Do not auto-call with one pair.'],
+      ['Ask what changed','Did the turn or river complete a draw? If yes, a raise may represent a made hand.'],
+      ['Continue with strong hands and strong draws','Weak top pair is not the same as a set or combo draw.']
+    ],
+    advanced:[
+      ['Raise ranges','Villain raises value and bluffs. Estimate whether enough bluffs exist before calling.'],
+      ['Board interaction','Raises on wet boards can include draws. Raises on dry boards are often more value-heavy.'],
+      ['Stack depth','Deep stacks make one-pair hands weaker against large raises.']
+    ],
+    extra:'textures'
+  },
+  {
+    key:'cbetting', emoji:'📍', name:'C-Betting', label:'Core+', minutes:'8 min',
+    simple:[
+      ['C-bet means continue','A continuation bet is when the preflop raiser bets the flop.'],
+      ['Bet more on good boards','Dry high-card boards often favour the preflop raiser.'],
+      ['Check bad boards','Connected low boards often help the caller. You do not need to c-bet everything.']
+    ],
+    advanced:[
+      ['Range advantage','Bet more often when your range has more strong hands than villain.'],
+      ['Size selection','Small sizes pressure missed hands. Bigger sizes work when you have nut advantage or need protection.'],
+      ['Delayed c-bet','Checking flop and betting turn can be good when flop is bad for your range or your hand needs pot control.']
+    ],
+    extra:'textures'
+  },
+  {
+    key:'bluffing', emoji:'🎭', name:'Bluffing Basics', label:'Core+', minutes:'7 min',
+    simple:[
+      ['Bluff with a story','A bluff should represent hands you could realistically have.'],
+      ['Choose foldable targets','Do not bluff players who hate folding.'],
+      ['Use equity when possible','Semi-bluffs with draws are better than hopeless bluffs.']
+    ],
+    advanced:[
+      ['Blocker bluffs','Good bluffs often block villain strong hands and unblock folds.'],
+      ['Fold equity','Bluffs work when villain folds often enough for your risk to be profitable.'],
+      ['Bad blockers','Holding cards that block villain missed draws can make bluffing worse.']
+    ],
+    extra:null
+  },
+  {
+    key:'playertypes', emoji:'👥', name:'Player Types', label:'Exploit', minutes:'7 min',
+    simple:[
+      ['Calling stations','They call too much. Bluff less and value bet more.'],
+      ['Nits','They fold too much and show strength when they continue. Steal more, but respect big action.'],
+      ['Aggressive players','Let them bluff when you have strong bluff-catchers, but avoid weak calls with no plan.']
+    ],
+    advanced:[
+      ['Exploitative adjustment','Change your baseline when villain has a clear leak.'],
+      ['Thin value','Against callers, bet more medium-strong hands for value.'],
+      ['Trap selectively','Against aggressive bluffers, checking strong hands can capture bluffs. Against passive players, bet yourself.']
+    ],
+    extra:null
+  }
+);
+`;
+
+const moduleQuizzesPatch = `
+quizzes.position = [
+  q('Which seat is usually best postflop?', '', ['UTG','Button','Small Blind','Big Blind'], 1, 'The Button acts last after the flop, giving maximum information.', 'position'),
+  q('Why should UTG play tighter?', '', ['Acts early with many players behind','Gets a discount','Always has position','Can see flop free'], 0, 'UTG acts early and many players can still wake up with strong hands.', 'position'),
+  q('Small Blind is difficult because...', '', ['You act first postflop','You always have AA','You close action always','You cannot fold'], 0, 'Small Blind is out of position after the flop.', 'small-blind'),
+  q('Button open with Q♠9♠ after folds. Beginner action?', '', ['Usually open','Always fold','Limp only','Call big blind'], 0, 'Button can open wider because only blinds remain and you have position.', 'button-open'),
+  q('Big Blind gets a discount, but...', '', ['Still needs playable hands','Must defend any two','Always has position','Cannot 3-bet'], 0, 'A discount helps, but weak hands still lose money.', 'bb-defense'),
+  q('Out of position means...', '', ['Acting before opponent','Acting after opponent','Being on Button','Winning by default'], 0, 'Out of position means you act first, which is harder.', 'position')
+];
+quizzes.draws = [
+  q('You have A♥7♥ on K♥9♥4♦. What do you have?', '', ['Made flush','Flush draw','Straight','Two pair'], 1, 'You have four hearts. You need five for a flush.', 'draws'),
+  q('Open-ended straight draw usually has how many outs?', '', ['4','6','8','12'], 2, 'Open-ended straight draws usually have 8 outs.', 'outs'),
+  q('Gutshot straight draw usually has how many outs?', '', ['2','4','8','9'], 1, 'A gutshot has 4 outs to complete the straight.', 'outs'),
+  q('Best reason to semi-bluff a draw?', '', ['Can win now or improve later','It guarantees a fold','Draws are already made hands','It avoids all risk'], 0, 'Semi-bluffs combine fold equity with drawing equity.', 'semi-bluff'),
+  q('Weak flush draws can be dangerous because...', '', ['Reverse implied odds','They always win','They cannot improve','They are illegal'], 0, 'You can hit and still lose to a higher flush.', 'reverse-implied-odds'),
+  q('On the river, a missed draw has...', '', ['No drawing equity left','Two cards to come','About 50% equity','Guaranteed bluff equity'], 0, 'There are no more cards on the river.', 'river')
+];
+quizzes.valueriver = [
+  q('On the river, you bet for value when...', '', ['Worse hands can call','Only better hands call','You missed every draw','You want no calls ever'], 0, 'A value bet needs worse hands to call.', 'value-bet'),
+  q('River missed flush draw with no showdown value. Best options?', '', ['Bluff or give up','Call yourself','Take another card','Always value bet'], 0, 'With no showdown value, you either bluff with a good story or give up.', 'river'),
+  q('Calling river just to see is usually...', '', ['A leak','Mandatory','A value bet','A 3-bet'], 0, 'Curiosity calls are expensive without enough bluff evidence.', 'curiosity-call'),
+  q('Large river bets are often...', '', ['Polarised','Always weak','Always medium pair','Never bluffs'], 0, 'Large river bets commonly represent strong value or bluffs.', 'polarisation'),
+  q('Against players who rarely bluff river, you should...', '', ['Fold more bluff-catchers','Call everything','Raise every pair','Ignore sizing'], 0, 'Against under-bluffers, bluff-catch less.', 'exploit'),
+  q('A blocker can help because...', '', ['It reduces villain value combos','It changes your hand rank','It guarantees a call','It removes the pot'], 0, 'Blockers remove some combinations villain can have.', 'blockers')
+];
+quizzes.facingraises = [
+  q('You bet top pair and get raised big on the turn. Beginner instinct?', '', ['Slow down and reassess','Auto-call','Auto-shove','Ignore board'], 0, 'Raises are often strong, especially at lower levels.', 'facing-raises'),
+  q('Raises on very wet boards can include...', '', ['Strong draws and value','Only air','No hands','Only bottom pair'], 0, 'Wet boards create draws that may raise aggressively.', 'board-texture'),
+  q('Raises on dry boards are often...', '', ['More value-heavy','Always bluffs','Always draws','Impossible'], 0, 'Dry boards have fewer draws, so raises skew stronger.', 'dry-board'),
+  q('Deep stacks make one-pair hands...', '', ['Less comfortable versus big raises','Always all-in hands','The nuts','Worth any price'], 0, 'Deep stacks increase the danger of playing huge pots with one pair.', 'stack-depth'),
+  q('When facing a raise, ask...', '', ['What value and bluffs exist','How pretty my cards are','Whether I am bored','Only my exact hand'], 0, 'Think in ranges: value hands and possible bluffs.', 'range-thinking'),
+  q('Weak top pair facing huge river raise is often...', '', ['A fold','A mandatory call','A value raise','A draw'], 0, 'Huge river raises are often under-bluffed by beginners.', 'river')
+];
+quizzes.cbetting = [
+  q('C-bet means...', '', ['Betting flop after raising preflop','Calling river','Posting blind','Showing cards'], 0, 'A continuation bet follows your preflop aggression.', 'cbet'),
+  q('A♣8♦2♥ after you raised preflop is usually...', '', ['Good for small c-bet','Always check-fold','Worst board ever','Always all-in'], 0, 'Dry ace-high boards often favour the raiser.', 'cbet'),
+  q('J♥T♥9♣ is a board where you should...', '', ['C-bet more carefully','Always small bet range','Always bluff no matter what','Never have value'], 0, 'Wet connected boards hit callers and draws often.', 'board-texture'),
+  q('Small c-bets work well when...', '', ['Villain misses often','You need all hands to fold','The board is impossible','You have no range advantage ever'], 0, 'Small bets can pressure missed hands efficiently.', 'cbet-size'),
+  q('You do not need to c-bet...', '', ['Every flop','Dry boards sometimes','When you have value','When villain misses'], 0, 'C-betting every flop becomes predictable and costly.', 'cbet'),
+  q('Delayed c-bet means...', '', ['Check flop, bet turn','Bet preflop twice','Raise river','Fold flop'], 0, 'Delayed c-bet is betting a later street after checking flop.', 'delayed-cbet')
+];
+quizzes.bluffing = [
+  q('Best bluff target is someone who...', '', ['Can fold','Never folds','Calls every pair','Shows down ace-high always'], 0, 'Bluffs need fold equity.', 'bluffing'),
+  q('A good bluff should...', '', ['Tell a believable story','Ignore the board','Represent nothing','Only use random cards'], 0, 'Your line should represent hands you could realistically have.', 'bluff-story'),
+  q('Semi-bluff means...', '', ['Bluffing with equity','Value betting the nuts','Calling with no outs','Checking river'], 0, 'Semi-bluffs can win now or improve later.', 'semi-bluff'),
+  q('Against a calling station, bluffing frequency should go...', '', ['Down','Up massively','All-in every hand','Random'], 0, 'Calling stations do not fold enough.', 'exploit'),
+  q('Blocker bluff works because...', '', ['You block villain strong hands','You block the dealer','You always have pair','You cannot lose'], 0, 'Blockers reduce the chance villain has certain value hands.', 'blockers'),
+  q('A hopeless bluff with no story is usually...', '', ['Burning chips','Mandatory','A value bet','Pot odds'], 0, 'Bluffs need a credible story and fold equity.', 'bad-bluff')
+];
+quizzes.playertypes = [
+  q('Calling station adjustment?', '', ['Value bet more, bluff less','Bluff more','Never bet strong hands','Fold all rivers'], 0, 'Calling stations call too much, so value bet them.', 'player-types'),
+  q('Nit adjustment?', '', ['Steal more, respect big action','Call every raise','Never bluff preflop','Value bet thinner always'], 0, 'Nits fold too much but show strength when they continue.', 'player-types'),
+  q('Aggressive bluffer adjustment with strong hand?', '', ['Let them bluff sometimes','Fold always','Never check','Only min-bet'], 0, 'Aggressive players may put money in for you.', 'player-types'),
+  q('Passive player raises river. Usually...', '', ['Strong range','Random air always','Mandatory call','Means missed draw always'], 0, 'Passive players tend to under-bluff raises.', 'population'),
+  q('Exploit means...', '', ['Adjusting to a specific leak','Playing random','Ignoring villain','Only using charts'], 0, 'Exploitative play punishes clear opponent mistakes.', 'exploit'),
+  q('Against over-folders, you can...', '', ['Bluff more','Bluff less','Never raise','Only call'], 0, 'If opponents fold too much, bluffs gain EV.', 'exploit')
+];
+`;
+
 module.exports = (req, res) => {
   const sourcePath = path.join(process.cwd(), 'source.html');
   const fallbackPath = path.join(process.cwd(), 'index.html');
@@ -56,6 +218,9 @@ module.exports = (req, res) => {
     "document.getElementById('quizCount').textContent = `${quizIndex} / ${total}`;",
     "document.getElementById('quizCount').textContent = `${quizIndex + 1} / ${total}`;"
   );
+
+  html = html.replace('const quizzes = {', moduleTopicsPatch + '\nconst quizzes = {');
+  html = html.replace('\nfunction q(question, scenario, options, answer, explain, leak){', moduleQuizzesPatch + '\nfunction q(question, scenario, options, answer, explain, leak){');
 
   html = html.replace(
     `function setConfidence(level){
