@@ -22,6 +22,27 @@ module.exports = (req, res) => {
     "document.getElementById('quizCount').textContent = `${quizIndex + 1} / ${total}`;"
   );
 
+  html = html.replace(
+    `function setConfidence(level){
+  const item = quiz[quizIndex];
+  const idx = originalQuestionIndex(currentTopic,item);
+  if(level === 'guess') addMistake(currentTopic, idx);
+  if(level === 'strong' && selectedOption === item.answer) removeMistake(currentTopic, idx);
+  quizAnswers.push({ok:selectedOption === item.answer, confidence:level, leak:item.leak});
+  document.getElementById('nextBtn').style.display = 'block';
+}`,
+    `function setConfidence(level){
+  if(selectedOption === null) return;
+  const item = quiz[quizIndex];
+  const idx = originalQuestionIndex(currentTopic,item);
+  if(level === 'guess') addMistake(currentTopic, idx);
+  if(level === 'strong' && selectedOption === item.answer) removeMistake(currentTopic, idx);
+  quizAnswers.push({ok:selectedOption === item.answer, confidence:level, leak:item.leak});
+  document.querySelectorAll('#confidence button').forEach(btn => btn.disabled = true);
+  setTimeout(nextQuestion, 180);
+}`
+  );
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).send(html);
