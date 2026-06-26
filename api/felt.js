@@ -95,8 +95,10 @@ function renderStats(){
 `;
 
 module.exports = (req, res) => {
-  const indexPath = path.join(process.cwd(), 'index.html');
-  let html = fs.readFileSync(indexPath, 'utf8');
+  const sourcePath = path.join(process.cwd(), 'source.html');
+  const fallbackPath = path.join(process.cwd(), 'index.html');
+  const htmlPath = fs.existsSync(sourcePath) ? sourcePath : fallbackPath;
+  let html = fs.readFileSync(htmlPath, 'utf8');
 
   html = html.replace(/<!-- STATS -->[\s\S]*?<!-- NAV -->/, statsBlock + '<!-- NAV -->');
   html = html.replace("if(name==='learn') renderLearn();", "if(name==='learn') renderLearn();\n  if(name==='stats') renderStats();");
