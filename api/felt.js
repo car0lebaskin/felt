@@ -58,6 +58,32 @@ module.exports = (req, res) => {
 }`
   );
 
+  html = html.replace(
+    `function startQuiz(key, reviewOnly=false){
+  currentTopic = key;
+  const base = quizzes[key] || [];`,
+    `function extraQuestions(key){
+  if(key === 'potodds') return [
+    q('Pot is 80. Villain bets 40. What equity do you need?', 'Half-pot bet.', ['20%','25%','30%','33%'], 1, 'You call 40 to win a final pot of 160. 40 / 160 = 25%.', 'pot-odds'),
+    q('Pot is 100. Villain bets 75. What equity do you need?', 'Three-quarter-pot bet.', ['20%','25%','30%','33%'], 2, 'You call 75 to win a final pot of 250. 75 / 250 = 30%.', 'pot-odds'),
+    q('Pot is 150. Villain bets 150. What equity do you need?', 'Pot-sized bet.', ['20%','25%','30%','33%'], 3, 'You call 150 to win a final pot of 450. 150 / 450 = 33%.', 'pot-odds')
+  ];
+  if(key === 'handread') return [
+    q('Board: Q♦ J♣ T♠. Your hand: K♥ 9♥. What is your best hand?', '', ['One pair','Straight','Flush','Nothing'], 1, 'K-Q-J-T-9 is a straight.', 'board-reading'),
+    q('Board: 5♠ 6♦ 7♣. Your hand: 8♥ 2♥. What do you have?', '', ['Straight','Flush draw','Open-ended straight draw','Two pair'], 2, 'A 4 or a 9 completes your straight, so this is an open-ended straight draw.', 'draws'),
+    q('Board: A♥ K♣ 7♦. Your hand: A♠ 2♠. What do you have?', '', ['Ace-high','One pair','Two pair','Straight'], 1, 'Your Ace pairs the Ace on board, so you have one pair.', 'hand-reading')
+  ];
+  if(key === 'preflop') return [
+    q('Everyone folds to you in the Cutoff with A♣9♣. Beginner action?', '', ['Fold always','Open-raise','Limp','Call the big blind'], 1, 'A9 suited is strong enough to open from the Cutoff. Raise first in rather than limp.', 'preflop'),
+    q('UTG opens. You are on the Button with 7♦2♣. Best action?', '', ['Call because position','Fold','3-bet bluff','All-in'], 1, 'Even with position, 72 offsuit is too weak versus an UTG open.', 'discipline')
+  ];
+  return [];
+}
+function startQuiz(key, reviewOnly=false){
+  currentTopic = key;
+  const base = (quizzes[key] || []).concat(extraQuestions(key));`
+  );
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).send(html);
