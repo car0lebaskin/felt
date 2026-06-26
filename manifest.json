@@ -1,1 +1,1 @@
-{"name":"Felt","short_name":"Felt","start_url":"/","scope":"/","display":"standalone","background_color":"#08080C","theme_color":"#08080C"}
+{"name":"Felt","short_name":"Felt","start_url":"/","scope":"/","display":"standalone","background_color":"#08080C","theme_color":"#08080C","icons":[{"src":"/felt-icon.svg","sizes":"any","type":"image/svg+xml"}]}
