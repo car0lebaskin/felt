@@ -1,6 +1,41 @@
 const fs = require('fs');
 const path = require('path');
 
+const mixedDrillPatch = `
+function shuffleMixed(list){
+  const a = list.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function mixedQuestionPool(){
+  let pool = [];
+  topics.forEach(t => {
+    if((S.completed[t.key] || 0) >= 60 || ['basics','handread','preflop','potodds'].includes(t.key)){
+      const items = (quizzes[t.key] || []).concat(typeof extraQuestions === 'function' ? extraQuestions(t.key) : []);
+      items.forEach(item => pool.push({...item, sourceTopic:t.key}));
+    }
+  });
+  return shuffleMixed(pool).slice(0, 8);
+}
+
+function startMixedDrill(){
+  currentTopic = 'mixed';
+  quiz = mixedQuestionPool();
+  quizIndex = 0;
+  quizRight = 0;
+  quizAnswers = [];
+  selectedOption = null;
+  S.lastQuiz = 'mixed';
+  save();
+  switchScreen('quiz');
+  renderQuestion();
+}
+`;
+
 module.exports = (req, res) => {
   const sourcePath = path.join(process.cwd(), 'source.html');
   const fallbackPath = path.join(process.cwd(), 'index.html');
@@ -34,9 +69,10 @@ module.exports = (req, res) => {
     `function setConfidence(level){
   if(selectedOption === null) return;
   const item = quiz[quizIndex];
-  const idx = originalQuestionIndex(currentTopic,item);
-  if(level === 'guess') addMistake(currentTopic, idx);
-  if(level === 'strong' && selectedOption === item.answer) removeMistake(currentTopic, idx);
+  const targetTopic = item.sourceTopic || currentTopic;
+  const idx = originalQuestionIndex(targetTopic,item);
+  if(level === 'guess') addMistake(targetTopic, idx);
+  if(level === 'strong' && selectedOption === item.answer) removeMistake(targetTopic, idx);
   quizAnswers.push({ok:selectedOption === item.answer, confidence:level, leak:item.leak});
   document.querySelectorAll('#confidence button').forEach(btn => btn.disabled = true);
   setTimeout(nextQuestion, 180);
@@ -123,6 +159,38 @@ function startQuiz(key, reviewOnly=false){
   currentTopic = key;
   const base = (quizzes[key] || []).concat(extraQuestions(key));`
   );
+
+  html = html.replace(
+    "if(!ok) addMistake(currentTopic, originalQuestionIndex(currentTopic,item), item.leak);",
+    "if(!ok){ const mistakeTopic = item.sourceTopic || currentTopic; addMistake(mistakeTopic, originalQuestionIndex(mistakeTopic,item), item.leak); }"
+  );
+
+  html = html.replace(
+    "return (quizzes[key]||[]).findIndex(q => q.question === item.question);",
+    "return ((quizzes[key]||[]).concat(typeof extraQuestions === 'function' ? extraQuestions(key) : [])).findIndex(q => q.question === item.question);"
+  );
+
+  html = html.replace(
+    "const levels = [\n    {n:1,name:'New Player',start:0,end:200},\n    {n:2,name:'Table Aware',start:200,end:500},\n    {n:3,name:'Range Builder',start:500,end:900},\n    {n:4,name:'Decision Maker',start:900,end:1400},\n    {n:5,name:'Solid Reg',start:1400,end:2100},\n    {n:6,name:'Crusher Mode',start:2100,end:999999}\n  ];\n  return levels.find(l => xp < l.end) || levels[levels.length-1];",
+    "const mastered = Object.values(S.completed || {}).filter(score => Number(score) >= 70).length;\n  if(mastered >= 6) return {n:6,name:'Practice Mode',start:2100,end:3200};\n  if(mastered >= 5) return {n:5,name:'Decision Maker',start:1400,end:2100};\n  if(mastered >= 3) return {n:4,name:'Range Builder',start:900,end:1400};\n  if(mastered >= 2) return {n:3,name:'Core Student',start:500,end:900};\n  if(mastered >= 1) return {n:2,name:'Table Aware',start:200,end:500};\n  return {n:1,name:'New Player',start:0,end:200};"
+  );
+
+  html = html.replace(
+    "document.getElementById('xpText').textContent = `${S.xp} / ${lvl.end} XP`;",
+    "document.getElementById('xpText').textContent = `${S.xp} XP · ${Object.values(S.completed || {}).filter(score => Number(score) >= 70).length} topics mastered`;"
+  );
+
+  html = html.replace(
+    "<div class=\"kicker\">Today's 7-minute session</div>",
+    "<div class=\"kicker\">Daily mission</div>"
+  );
+
+  html = html.replace(
+    '<button class="btn secondary" onclick="showOnboarding(true)">Path</button>',
+    '<button class="btn secondary" onclick="startMixedDrill()">Mixed</button>'
+  );
+
+  html = html.replace('function init(){', mixedDrillPatch + '\nfunction init(){');
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
